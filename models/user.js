@@ -29,6 +29,10 @@ var UserSchema = mongoose.Schema({
     city: {
         type: String,
         required: true
+    },
+    isConsented: {
+        type: Boolean,
+        require:  true
     }
 });
 
