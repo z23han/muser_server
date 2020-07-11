@@ -13,16 +13,20 @@ router.post('/register', function(req, res){
     if (req.body.name != undefined && req.body.password != undefined 
         && req.body.age != undefined && req.body.gender != undefined 
         && req.body.phone != undefined
-        && req.body.city != undefined) {
+        && req.body.city != undefined
+        && req.body.isConsented != undefined) {
 
-        body('phone', 'valid phone required').isNumeric();
+        body('phone', 'valid phone required').isNumeric().isLength({ min: 11, max: 11});
         body('age', 'valid age required').isNumeric();
+        body('isConsented', 'valid isConsented required').isBoolean();
         
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
+            res.status(400);
             return res.json({success: false, msg: "Please provide valid user infomation"});
         }
         if (!/m|f/.test(req.body.gender)) {
+            res.status(400);
             return res.json({success: false, msg: "Please provide valid gender"});
         } else {
             
@@ -37,18 +41,22 @@ router.post('/register', function(req, res){
                 gender: req.body.gender,
                 phone: req.body.phone,
                 city: req.body.city,
+                isConsented: req.body.isConsented
             });
 
             // Add user to the database
             User.addUser(newUser, function (err) {
                 if(err){
+                    res.status(400);
                     return res.json({success: false, msg: err.errmsg});
                 } else {
+                    res.status(201);
                     return res.json({success: true, msg: "User registered"});
                 }
             });
         }
     } else{
+        res.status(400);
         return res.json({success: false, msg: "Fill in all blanks"});
     } 
 });
@@ -64,6 +72,7 @@ router.post('/login', function (req, res) {
 
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
+            res.status(400);
             return res.json({success: false, msg: "Please provide valid user infomation"});
         }
 
@@ -74,13 +83,16 @@ router.post('/login', function (req, res) {
         if (name != undefined) {
             User.getUserByName(name, function (err, user) {
                 if (err) {
+                    res.status(400);
                     return res.json({success: false, msg: err.errmsg});
                 }
                 if (!user) {
+                    res.status(404);
                     return res.json({success: false, msg: "User not found"});
                 }
                 User.comparePassword(password, user.password, function (err, isMatch) {
                     if (err) {
+                        res.status(401);
                         return res.json({success: false, msg: err.errmsg});
                     }
 
@@ -97,6 +109,7 @@ router.post('/login', function (req, res) {
                             user: user
                         });
                     } else {
+                        res.status(401);
                         return res.json({
                             success: false,
                             msg: "Wrong password"
@@ -107,13 +120,16 @@ router.post('/login', function (req, res) {
         } else {
             User.getUserByPhone(phone, function (err, user) {
                 if (err) {
+                    res.status(400);
                     return res.json({success: false, msg: err.errmsg});
                 }
                 if (!user) {
+                    res.status(404);
                     return res.json({success: false, msg: "User not found"});
                 }
                 User.comparePassword(password, user.password, function (err, isMatch) {
                     if (err) {
+                        res.status(400);
                         return res.json({success: false, msg: err.errmsg});
                     }
 
@@ -130,6 +146,7 @@ router.post('/login', function (req, res) {
                             user: user
                         });
                     } else {
+                        res.status(401);
                         return res.json({
                             success: false,
                             msg: "Wrong password"
@@ -140,6 +157,7 @@ router.post('/login', function (req, res) {
         }
         
     } else {
+        res.status(400);
         return res.json({success: false, msg: "Missing name/phone/password"});
     }
 
