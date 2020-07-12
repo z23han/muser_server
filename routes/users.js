@@ -28,33 +28,36 @@ router.post('/register', function(req, res){
         if (!/m|f/.test(req.body.gender)) {
             res.status(400);
             return res.json({success: false, msg: "Please provide valid gender"});
-        } else {
-            
-            body("name").trim().escape();
-            body("city").trim().escape();
-
-            // Create a new instance of the user
-            var newUser = new User({
-                name: req.body.name,
-                password: req.body.password,
-                age: req.body.age,
-                gender: req.body.gender,
-                phone: req.body.phone,
-                city: req.body.city,
-                isConsented: req.body.isConsented
-            });
-
-            // Add user to the database
-            User.addUser(newUser, function (err) {
-                if(err){
-                    res.status(400);
-                    return res.json({success: false, msg: err.errmsg});
-                } else {
-                    res.status(201);
-                    return res.json({success: true, msg: "User registered"});
-                }
-            });
         }
+        if (req.body.isConsented == false) {
+            res.status(400);
+            return res.json({success: false, msg: "Please consent"});
+        }
+            
+        body("name").trim().escape();
+        body("city").trim().escape();
+
+        // Create a new instance of the user
+        var newUser = new User({
+            name: req.body.name,
+            password: req.body.password,
+            age: req.body.age,
+            gender: req.body.gender,
+            phone: req.body.phone,
+            city: req.body.city,
+            isConsented: req.body.isConsented
+        });
+
+        // Add user to the database
+        User.addUser(newUser, function (err) {
+            if(err){
+                res.status(400);
+                return res.json({success: false, msg: err.errmsg});
+            } else {
+                res.status(201);
+                return res.json({success: true, msg: "User registered"});
+            }
+        });
     } else{
         res.status(400);
         return res.json({success: false, msg: "Fill in all blanks"});
