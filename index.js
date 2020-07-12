@@ -7,10 +7,17 @@ const config = require('./config/database');
 const mongoose = require('mongoose');
 
 //Connect to database
-mongoose.connect(config.database);
+var database = ""
+if (config.environment == "PROD") {
+    database = config.ProdDB;
+} else {
+    database = config.TestDB;
+}
+
+mongoose.connect(database);
 
 mongoose.connection.on('connected', function(){
-    console.log('Connected to database' + config.database);
+    console.log('Connected to database' + database);
 });
 
 mongoose.connection.on('error', function(err){
