@@ -35,6 +35,11 @@ require('./config/passport')(passport);
 
 app.use('/users', users);
 
+// create a path to our install package
+app.get('/downloadFile/install', (req, res) => {
+    res.download('./downloadFile/installpackage');
+})
+
 app.listen(8080, () => {
     console.log('listening to port 8080');
 });
