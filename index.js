@@ -44,7 +44,11 @@ app.use('/users', users);
 
 // create a path to our install package
 app.get('/downloadFile/install', (req, res) => {
-    res.download('./downloadFile/installpackage');
+    res.download('./downloadFile/app.apk');
+});
+
+app.get('/test', (req, res) => {
+    res.send('hello world');
 })
 
 app.listen(8080, () => {
